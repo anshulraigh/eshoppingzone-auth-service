@@ -27,7 +27,9 @@ public class AuthService {
         jwtService.validateToken(token);
     }
 
-    public String generateToken(String userName) {
-        return jwtService.generateToken(userName);
+    public String generateToken(String email) {
+        UserInfo user = repository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+        return jwtService.generateToken(user);
     }
 }

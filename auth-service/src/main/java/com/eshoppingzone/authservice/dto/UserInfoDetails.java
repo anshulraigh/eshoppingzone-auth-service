@@ -9,11 +9,11 @@ import java.util.List;
 
 public class UserInfoDetails implements UserDetails {
 
-    private String username;
+    private String email;
     private String password;
 
     public UserInfoDetails(UserInfo userInfo) {
-        this.username = userInfo.getName();
+        this.email = userInfo.getEmail(); // changed from getName()
         this.password = userInfo.getPassword();
     }
 
@@ -29,26 +29,18 @@ public class UserInfoDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return email; // used email as username
     }
 
     @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+    public boolean isAccountNonExpired() { return true; }
 
     @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+    public boolean isAccountNonLocked() { return true; }
 
     @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+    public boolean isCredentialsNonExpired() { return true; }
 
     @Override
-    public boolean isEnabled() {
-        return true;
-    }
+    public boolean isEnabled() { return true; }
 }

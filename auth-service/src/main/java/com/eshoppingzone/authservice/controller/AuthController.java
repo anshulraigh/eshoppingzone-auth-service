@@ -28,13 +28,14 @@ public class AuthController {
 
     @PostMapping("/generateToken")
     public String generateToken(@RequestBody AuthRequest authRequest) {
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getName(), authRequest.getPassword()));
-        if(authenticate.isAuthenticated()) {
-            return authService.generateToken(authRequest.getName());
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
+        );
+        if (authentication.isAuthenticated()) {
+            return authService.generateToken(authRequest.getEmail());
         } else {
-            throw new RuntimeException("Invalid credential.");
+            throw new RuntimeException("Invalid credentials.");
         }
-
     }
 
     @GetMapping("/validateToken")

@@ -1,5 +1,7 @@
 package com.eshoppingzone.authservice.service;
 
+import com.eshoppingzone.authservice.entity.UserInfo;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -15,13 +17,16 @@ import java.util.Map;
 public class JwtService {
     public static final String SECRET = "1234567812345678123456781234567812345678123456781234567812345678";
 
-    public String generateToken(String userName) {
+    public String generateToken(UserInfo user) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", user.getId());
+        claims.put("role", user.getRole());
 
-        Long currentTime = System.currentTimeMillis();
-        Date date = new Date(System.currentTimeMillis());
+        long currentTime = System.currentTimeMillis();
+
         return Jwts.builder()
                 .setClaims(claims)
+                .setSubject(user.getEmail()) // use email as subject
                 .setIssuedAt(new Date(currentTime))
                 .setExpiration(new Date(currentTime + 1000 * 60 * 60))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
@@ -39,4 +44,21 @@ public class JwtService {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
+    public Map<String, Object> extractUserDetails(String token) {
+        var claims = extractAllClaims(token);
+        Map<String, Object> userDetails = new HashMap<>();
+        userDetails.put("userId", claims.get("userId"));
+        userDetails.put("role", claims.get("role"));
+        return userDetails;
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSignKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
 }
